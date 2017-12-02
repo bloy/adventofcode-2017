@@ -2,6 +2,9 @@
 
 import itertools
 
+import aoc
+
+
 def checksum(row):
     return max(row) - min(row)
 
@@ -22,8 +25,7 @@ def solve2(rows):
     return sum(checksum2(row) for row in rows)
 
 if __name__ == '__main__':
-    with open('day2_input.txt') as f:
-        rows = [[int(col) for col in row.strip().split('\t')] for row in f]
-
+    rows = [[int(col) for col in row.split('\t')]
+            for row in aoc.input_lines(day=2)]
     print(solve1(rows))
     print(solve2(rows))
