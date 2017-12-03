@@ -1,8 +1,8 @@
 #!env python
 
 import itertools
-import math
-import pprint
+import collections
+
 
 def rings():
     prevringmax = 0
@@ -19,6 +19,26 @@ def find_ring(num):
             return ring
 
 
+def memorypositions():
+    for ring, ringrange in rings():
+        if ring == 0:
+            yield (0, 0)
+        xpos = itertools.chain(
+            itertools.repeat(ring, ring*2),
+            range(ring-1, -ring-1, -1),
+            itertools.repeat(-ring, ring*2),
+            range(-ring+1, ring+1)
+        )
+        ypos = itertools.chain(
+            range(-ring+1, ring+1),
+            itertools.repeat(ring, ring*2),
+            range(ring-1, -ring-1, -1),
+            itertools.repeat(-ring, ring*2)
+        )
+        for pos in zip(xpos, ypos):
+            yield tuple(pos)
+
+
 def solve1(num):
     ring, ringrange = find_ring(num)
     if ring == 0:
@@ -30,8 +50,21 @@ def solve1(num):
             return dist
 
 
+def solve2(num):
+    sums = collections.defaultdict(int)
+    for i, pos in enumerate(memorypositions()):
+        if i == 0:
+            sums[pos] = 1;
+        sums[pos] = sum(sums[(x, y)]
+                        for x in range(pos[0]-1, pos[0]+2)
+                        for y in range(pos[1]-1, pos[1]+2))
+        if sums[pos] > num:
+            return sums[pos];
+
+
 if __name__ == '__main__':
     space = 361527
-    examples = (1, 2, 3, 12, 23, 1024, space)
+    examples = [space]
     for ex in examples:
         print(ex, solve1(ex))
+        print(ex, solve2(ex))
