@@ -50,6 +50,12 @@ def solve1(num):
             return dist
 
 
+def solve1alt(num):
+    for i, pos in enumerate(memorypositions()):
+        if i + 1 == num:
+            return abs(pos[0]) + abs(pos[1])
+
+
 def solve2(num):
     sums = collections.defaultdict(int)
     for i, pos in enumerate(memorypositions()):
@@ -66,5 +72,5 @@ if __name__ == '__main__':
     space = 361527
     examples = [space]
     for ex in examples:
-        print(ex, solve1(ex))
+        print(ex, solve1alt(ex))
         print(ex, solve2(ex))
