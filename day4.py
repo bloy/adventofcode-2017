@@ -32,7 +32,16 @@ def solve2(rows):
     return count
 
 
+def solve2alt(rows):
+    count = 0
+    for row in rows:
+        words = ["".join(sorted(word)) for word in row.split(' ')]
+        if len(words) == len(set(words)):
+            count += 1
+    return count
+
+
 if __name__ == '__main__':
     rows = [row for row in aoc.input_lines(day=4)]
     print(solve1(rows))
-    print(solve2(rows))
+    print(solve2alt(rows))
