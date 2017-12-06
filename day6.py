@@ -3,14 +3,41 @@
 import aoc
 
 
-def solve1(rows):
-    return None
+def iterate(row):
+    banks = list(row)
+    idx = banks.index(max(banks))
+    count = banks[idx]
+    banks[idx] = 0
+    while count > 0:
+        idx = (idx + 1) % len(banks)
+        banks[idx] += 1
+        count -= 1
+    return tuple(banks)
 
 
-def solve2(rows):
-    return None
+def solve1(row):
+    seen = set()
+    count = 0
+    while row not in seen:
+        seen.add(row)
+        count += 1
+        row = iterate(row)
+    return count
+
+def solve2(row):
+    seen = set()
+    record = list()
+    count = 0
+    while row not in seen:
+        seen.add(row)
+        record.append(row)
+        count += 1
+        row = iterate(row)
+    return count - record.index(row)
 
 if __name__ == '__main__':
-    rows = [row for row in aoc.input_lines(day=6)]
-    print(solve1(rows))
-    print(solve2(rows))
+    rows = [(0, 2, 7, 0)]
+    rows = [tuple(int(bank) for bank in row.split()) for row in aoc.input_lines(day=6)]
+    row = rows[0]
+    print(solve1(row))
+    print(solve2(row))
