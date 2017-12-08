@@ -56,6 +56,8 @@ def solve2(data):
         (name, pile[name].weight, total_weight(name, pile))
         for name in highest_unbalanced[1]
     ]
+    # this just prints out the unbalanced childrein, their total weight
+    # and their individual weight. Math is left as an excersize for the reader
     pprint.pprint(unbalanced_children)
 
 
