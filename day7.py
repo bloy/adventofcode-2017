@@ -5,6 +5,8 @@ import collections
 import pprint
 
 
+Program = collections.namedtuple('Program', ['name', 'weight', 'children'])
+
 def read_rows(rows):
     data = []
     for row in rows:
@@ -12,7 +14,8 @@ def read_rows(rows):
         children = tuple(row[1].split(', ')) if len(row) == 2 else tuple()
         name, weight = row[0].split(' ')
         weight = int(weight[1:-1])
-        data.append((name, weight, children))
+        program = Program(name, weight, children)
+        data.append(program)
     return data
 
 
@@ -20,13 +23,40 @@ def solve1(data):
     names = set()
     withparents = set()
     for row in data:
-        names.add(row[0])
-        withparents.update(set(row[2]))
-    return names - withparents
+        names.add(row.name)
+        withparents.update(set(row.children))
+    return list(names - withparents)[0]
+
+
+weights = {}
+
+def total_weight(root, pile):
+    if root not in weights:
+        child_weights = tuple(total_weight(child, pile)
+                              for child in pile[root].children)
+        weights[root] = (
+            (pile[root].weight + sum(child_weights)),
+            pile[root].weight, child_weights)
+    return weights[root][0]
 
 
 def solve2(data):
-    return None
+    root = solve1(data)
+    pile = {row.name: row for row in data}
+    total_weight(root, pile)
+    unbalanced = [(name,
+                   pile[name].children,
+                   tuple(total_weight(child, pile)
+                         for child in pile[name].children))
+                  for name in weights if len(set(weights[name][2])) > 1]
+    unbalanced_names = set([un[0] for un in unbalanced])
+    highest_unbalanced = [test for test in unbalanced
+                          if set(test[1]).intersection(unbalanced_names) == set()][0]
+    unbalanced_children = [
+        (name, pile[name].weight, total_weight(name, pile))
+        for name in highest_unbalanced[1]
+    ]
+    pprint.pprint(unbalanced_children)
 
 
 rows = """pbga (66)
@@ -48,4 +78,4 @@ if __name__ == '__main__':
     rows = [row for row in aoc.input_lines(day=7)]
     data = read_rows(rows)
     print(solve1(data))
-    print(solve2(data))
+    solve2(data)
