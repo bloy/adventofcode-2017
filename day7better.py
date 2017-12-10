@@ -4,7 +4,7 @@
 import aoc
 import re
 import collections
-import pprint
+import itertools
 
 
 Program = collections.namedtuple('Program', ('name', 'weight',
@@ -56,13 +56,37 @@ def printable_tree(tree):
             tuple(printable_tree(child) for child in tree.children))
 
 
+def is_unbalanced(tree):
+    group_by_total_weight = itertools.groupby(tree.children,
+                                              lambda c: c.total_weight)
+    return len(tuple(group_by_total_weight)) > 1
+
+
+def find_balancing_weight(tree, matchweight=0):
+    group_by_total_weight = itertools.groupby(
+        sorted(tree.children, key=lambda c: c.total_weight),
+        lambda c: c.total_weight)
+    groups = tuple((group[0], tuple(group[1])) for group in group_by_total_weight)
+    if len(groups) > 1:
+        for group in groups:
+            if len(group[1]) == 1:
+                oddchild = group[1][0]
+            else:
+                to_match = group[0]
+        return find_balancing_weight(oddchild, to_match)
+    else:
+        child_weight = groups[0][0]
+        total_child_weight = child_weight * len(tree.children)
+        return matchweight - total_child_weight
+
+
 def solve1(data):
     return find_root(data)
 
 
 def solve2(data):
     tree = build_tree(data)
-    pprint.pprint(printable_tree(tree))
+    return find_balancing_weight(tree)
 
 
 lines = (
@@ -83,7 +107,7 @@ lines = (
 
 
 if __name__ == '__main__':
-    # lines = aoc.input_lines(day=7)
+    lines = aoc.input_lines(day=7)
     data = parse_data(lines)
     print(solve1(data))
     print(solve2(data))
