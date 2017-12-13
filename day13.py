@@ -24,11 +24,9 @@ def position_at(traverse, time):
 
 
 def simulate(layers, start=0):
-    collisions = []
-    for t in range(max(layers.keys()) + 1):
-        if t in layers and position_at(layers[t], t+start) == 0:
-            collisions.append((t, layers[t]))
-    return sum((a * b) for a,b in collisions)
+    return sum(layers[layer] * layer
+               for layer in layers
+               if position_at(layers[layer], layer+start) == 0)
 
 
 def print_at(layers, time):
@@ -48,27 +46,26 @@ def solve1(data):
 
 
 def solve2(data):
-    t = 0
+    # getting caught by the first layer still counts even though its sum is zero
+    wait = 0
     layers = data
-    caught = simulate(layers, start=t)
-    while caught > 0:
-        print(t, caught)
-        t += 1
-        caught = simulate(layers, start=t)
-    return t
+    while any(position_at(layers[layer], layer+wait) == 0
+              for layer in layers):
+        wait += 1
+    return wait
 
 
 
 lines = [
     "0: 3",
     "1: 2",
-    "4: 6",
+    "4: 4",
     "6: 4",
 ]
 
 
 if __name__ == '__main__':
-    #lines = aoc.input_lines(day=13)
+    lines = aoc.input_lines(day=13)
     data = parse_data(lines)
     pprint.pprint(solve1(data))
     pprint.pprint(solve2(data))
