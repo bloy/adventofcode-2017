@@ -6,41 +6,30 @@ import copy
 import pprint
 
 
-Scanner = collections.namedtuple('Scanner', 'pos vector traverse')
-
-
 def parse_data(lines):
     scanners = {}
     maxlayer = 0
     for line in lines:
         layer, traverse = line.split(': ')
         layer = int(layer)
+        traverse = int(traverse)
         if maxlayer < layer:
             maxlayer = layer
-        scanners[layer] = Scanner(pos=0, vector=1, traverse=int(traverse))
+        scannerpositions = (tuple(range(traverse))
+                            + tuple(range(traverse-2, 0, -1)))
+        scanners[layer] = (traverse, scannerpositions)
     return maxlayer, scanners
 
 
-def advance_state(layers):
-    for layer in layers:
-        scanner = layers[layer]
-        newpos = scanner.pos + scanner.vector
-        newvector = scanner.vector
-        if newpos < 0 or newpos >= scanner.traverse:
-            newvector = -1 * scanner.vector
-            newpos = scanner.pos + newvector
-        layers[layer] = Scanner(pos=newpos, vector=newvector,
-                                traverse=scanner.traverse)
-    return layers
+def position_at(positions, time):
+    return positions[time % len(positions)]
 
 
-def simulate(layers, maxlayer):
-    layers = copy.deepcopy(layers)
+def simulate(layers, maxlayer, start=0):
     collisions = []
     for t in range(maxlayer + 1):
-        if t in layers and layers[t].pos == 0:
-            collisions.append((t, layers[t].traverse))
-        layers = advance_state(layers)
+        if t in layers and position_at(layers[t][1], t+start) == 0:
+            collisions.append((t, layers[t][0]))
     return sum((a * b) for a,b in collisions)
 
 
@@ -52,12 +41,11 @@ def solve1(data):
 def solve2(data):
     t = 0
     maxlayer, layers = data
-    caught = simulate(layers, maxlayer)
+    caught = simulate(layers, maxlayer, start=t)
     while caught > 0:
         print(t, caught)
         t += 1
-        layers = advance_state(layers)
-        caught = simulate(layers, maxlayer)
+        caught = simulate(layers, maxlayer, start=t)
     return t
 
 
@@ -71,7 +59,7 @@ lines = [
 
 
 if __name__ == '__main__':
-    # lines = aoc.input_lines(day=13)
+    #lines = aoc.input_lines(day=13)
     data = parse_data(lines)
     pprint.pprint(solve1(data))
-    pprint.pprint(solve2(data))
+    # pprint.pprint(solve2(data))
