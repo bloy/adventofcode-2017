@@ -51,8 +51,55 @@ def solve1(data):
     return "terminated"
 
 
+def program(data, pid, rcvqueue, sndqueue):
+    registers = collections.defaultdict()
+    registers['p'] = pid
+    pc = 0
+    sendcount = 0
+    terminated = False
+    while 0 <= pc < len(data) and not terminated:
+        instr = data[pc][0]
+        v1 = data[pc][1]
+        v2 = data[pc][2] if len(data[pc]) > 2 else None
+        pc += 1
+
+        if instr == 'snd':
+            sndqueue.appendleft(valueof(v1, registers))
+            sendcount += 1
+        elif instr == 'rcv':
+            if len(rcvqueue) == 0:
+                yield sendcount
+            try:
+                registers[v1] = rcvqueue.pop()
+            except IndexError:
+                terminated = True
+        elif instr == 'set':
+            registers[v1] = valueof(v2, registers)
+        elif instr == 'add':
+            registers[v1] += valueof(v2, registers)
+        elif instr == 'mul':
+            registers[v1] *= valueof(v2, registers)
+        elif instr == 'mod':
+            registers[v1] = registers[v1] % valueof(v2, registers)
+        elif instr == 'jgz':
+            if valueof(v1, registers) > 0:
+                pc += valueof(v2, registers) - 1
+    yield sendcount
+
+
 def solve2(data):
-    pass
+    queues = [collections.deque(), collections.deque()]
+    programs = [program(data, 0, queues[0], queues[1]),
+                program(data, 1, queues[1], queues[0])]
+    current = 0
+    returns = [None, None]
+    while 1:
+        try:
+            returns[current] = next(programs[current])
+        except StopIteration:
+            return returns
+        current = (current + 1) % 2
+
 
 
 lines = [
