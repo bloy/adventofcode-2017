@@ -45,7 +45,11 @@ def distance_at_tick(tick, particle):
 
 
 def solve1(data):
-    return data
+    result = []
+    for particle in data:
+        result.append((
+            particle['num'], distance_at_tick(1000, particle)))
+    return min(result, key=lambda v: v[1])
 
 
 def solve2(data):
@@ -53,15 +57,13 @@ def solve2(data):
 
 
 lines = [
-    'p=<3,0,0>, v=<2,0,0>, a=<-1,0,0>'
+    'p=<3,0,0>, v=<2,0,0>, a=<-1,0,0>',
+    'p=<4,0,0>, v=<0,0,0>, a=<-2,0,0>'
 ]
 
 
 if __name__ == '__main__':
-    # lines = aoc.input_lines(day=20)
+    lines = aoc.input_lines(day=20)
     data = parse_data(lines)
-    pprint.pprint(data[0])
-    for tick in range(10):
-        pprint.pprint(pos_at_tick(tick, data[0]))
-    # pprint.pprint(solve1(data))
-    # pprint.pprint(solve2(data))
+    pprint.pprint(solve1(data))
+    pprint.pprint(solve2(data))
