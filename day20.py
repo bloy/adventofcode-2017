@@ -2,6 +2,7 @@
 
 import aoc
 import collections
+import itertools
 import pprint
 
 
@@ -53,7 +54,26 @@ def solve1(data):
 
 
 def solve2(data):
-    pass
+    particles = data
+    count = len(particles)
+    deltacount = 0
+    for t in itertools.count():
+        positions = [pos_at_tick(t, p) for p in particles]
+        for p in set(positions):
+            if positions.count(p) > 1:
+                while p in positions:
+                    i = positions.index(p)
+                    del positions[i]
+                    del particles[i]
+        if count != len(particles):
+            count = len(particles)
+            deltacount = 0
+        else:
+            deltacount += 1
+        print("time:", t, "time since change:", deltacount,
+              "num particles:", len(particles))
+        if deltacount >= 1000:
+            return len(particles)
 
 
 lines = [
