@@ -35,6 +35,39 @@ def rotates_and_flips(chunk):
     return tuple(trans)
 
 
+def split_parts(large):
+    bigsize = int(len(large) ** 0.5)
+    if bigsize % 2 == 0:
+        chunksize = 2
+    else:
+        chunksize = 3
+    parts = []
+    partsize = int(bigsize / chunksize)
+    for y in range(partsize):
+        for x in range(partsize):
+            startx = x * chunksize
+            starty = y * chunksize
+            part = "".join(
+                large[startx+bigsize*i:startx+bigsize*i+chunksize]
+                for i in range(starty, starty+chunksize))
+            parts.append(part)
+    return parts
+
+
+def join_parts(parts):
+    partsize = int(len(parts) ** 0.5)
+    chunksize = int(len(parts[0]) ** 0.5)
+    parts = [[part[i*chunksize:i*chunksize+chunksize]
+              for i in range(chunksize)]
+             for part in parts]
+    rows = []
+    for i in range(partsize):
+        subrows = parts[i*partsize:i*partsize+partsize]
+        subrows = ["".join(subrow) for subrow in zip(*subrows)]
+        rows.append(subrows)
+    return "".join("".join(row) for row in rows)
+
+
 def parse_data(lines):
     transforms = {}
     for line in lines:
@@ -70,6 +103,17 @@ start = (
     '.#.'
     '..#'
     '###'
+)
+
+test = (
+    '01234567'
+    '89abcdef'
+    'ghijklmn'
+    'opqrstuv'
+    'wxyzABCD'
+    'EFGHIJKL'
+    'MNOPQRST'
+    'UVWXYZ*$'
 )
 
 if __name__ == '__main__':
