@@ -82,11 +82,25 @@ def parse_data(lines):
 
 
 def solve1(start, data):
-    return data
+    canvas = start
+    print_chunk(canvas)
+    for i in range(5):
+        parts = split_parts(canvas)
+        parts = [data[part] for part in parts]
+        canvas = join_parts(parts)
+        print_chunk(canvas)
+    return canvas.count('#')
 
 
 def solve2(start, data):
-    pass
+    canvas = start
+    print_chunk(canvas)
+    for i in range(18):
+        parts = split_parts(canvas)
+        parts = [data[part] for part in parts]
+        canvas = join_parts(parts)
+        print_chunk(canvas)
+    return canvas.count('#')
 
 
 def print_chunk(chunk):
