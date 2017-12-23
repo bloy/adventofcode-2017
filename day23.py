@@ -50,24 +50,13 @@ def solve2():
     b *= 100
     b += 100000
     c = b + 17000
-    while True:
-        f = 1
-        d = 2
-
-        print("b:", b, "c:", c, "d:", d, "f:", f, "h:", h)
-
-        while True:
-            if b % d == 0:
-                f = 0
-            d += 1
-            if d != b:
-                continue
-            if f == 0:
-                h += 1
-            break
-        if b == c:
-            return(h)
-        b = b + 17
+    for e in range(b, c+1, 17):
+        for d in range(2,e):
+            if e % d == 0:
+                h+= 1
+                break
+        print("b:", b, "c:", c, "d:", d,  "h:", h)
+    return h
 
 
 if __name__ == '__main__':
